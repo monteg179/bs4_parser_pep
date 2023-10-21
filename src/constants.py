@@ -13,6 +13,7 @@ LOG_DIR = BASE_DIR / 'logs'
 LOG_FILE = 'parser.log'
 LOG_FORMAT = '"%(asctime)s - [%(levelname)s] - %(message)s"'
 
+DOWNLOAD_BLOCK_SIZE = 102400
 
 EXPECTED_STATUS = {
     'A': ('Active', 'Accepted'),

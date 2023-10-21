@@ -1,24 +1,17 @@
 import logging
-from pathlib import (
-    Path,
-)
-from http import (
-    HTTPStatus,
-)
+from pathlib import Path
+from http import HTTPStatus
 
-from bs4 import (
-    BeautifulSoup,
-)
+from bs4 import BeautifulSoup
 from requests import (
     RequestException,
     Response,
     Session,
 )
-from tqdm import (
-    tqdm,
-)
+from tqdm import tqdm
 import urllib3
 
+from constants import DOWNLOAD_BLOCK_SIZE
 from exceptions import (
     ParserFindTagException,
     RequestError,
@@ -27,7 +20,6 @@ from exceptions import (
 
 
 def download_file(url: str, path: Path) -> None:
-    kibibyte = 1024
     http = urllib3.PoolManager()
     try:
         response = http.request('GET', url, preload_content=False)
@@ -36,10 +28,9 @@ def download_file(url: str, path: Path) -> None:
             logging.error(ResponseError.MESSAGE.format(url, status))
             raise ResponseError(url, status)
         file_size = int(response.headers.get('content-length', 0))
-        block_size = kibibyte * 100
         with open(path, 'wb') as file:
             with tqdm(total=file_size, unit_scale=True) as bar:
-                for chunk in response.stream(block_size):
+                for chunk in response.stream(DOWNLOAD_BLOCK_SIZE):
                     file.write(chunk)
                     bar.update(len(chunk))
     except urllib3.exceptions.RequestError:

@@ -1,18 +1,10 @@
 import logging
 import re
 
-from urllib.parse import (
-    urljoin,
-)
-from requests import (
-    Session,
-)
-from requests_cache import (
-    CachedSession,
-)
-from tqdm import (
-    tqdm,
-)
+from requests import Session
+from requests_cache import CachedSession
+from tqdm import tqdm
+from urllib.parse import urljoin
 
 from configs import (
     configure_argument_parser,
@@ -27,12 +19,8 @@ from exceptions import (
     DeliveryError,
     ParserFindTagException,
 )
-from outputs import (
-    control_output,
-)
-from peps import (
-    Peps,
-)
+from outputs import control_output
+from peps import Peps
 from utils import (
     download_file,
     make_soup,
@@ -70,7 +58,7 @@ def whats_new(session: Session) -> list[tuple[str, str, str]]:
     return result
 
 
-def latest_versions(session: Session):
+def latest_versions(session: Session) -> list[tuple[str, str, str]]:
     soup = make_soup(session, MAIN_DOC_URL)
     ul_tags = soup.html.body.select('div.sphinxsidebarwrapper ul')
     for ul_tag in ul_tags:
@@ -115,8 +103,9 @@ def pep(session: Session) -> list[tuple[str, str]]:
     instance = Peps(MAIN_PEP_URL)
     instance(session)
     result = [('Статус', 'Количество')]
-    for key, value in instance.statistics.items():
-        result.append((key, str(value)))
+    result.extend(
+        [(key, str(value)) for key, value in instance.statistics.items()]
+    )
     total = sum(instance.statistics.values())
     result.append(('Total', str(total)))
     return result
