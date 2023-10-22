@@ -30,6 +30,8 @@ from utils import (
 def whats_new(session: Session) -> list[tuple[str, str, str]]:
     whats_new_url = MAIN_DOC_URL + 'whatsnew/'
     soup = make_soup(session, whats_new_url)
+    if soup is None:
+        return
     ul_tag = soup.html.body.select_one('#what-s-new-in-python ul')
     if ul_tag is None:
         message = 'Не найден <ul>'
@@ -60,6 +62,8 @@ def whats_new(session: Session) -> list[tuple[str, str, str]]:
 
 def latest_versions(session: Session) -> list[tuple[str, str, str]]:
     soup = make_soup(session, MAIN_DOC_URL)
+    if soup is None:
+        return
     ul_tags = soup.html.body.select('div.sphinxsidebarwrapper ul')
     for ul_tag in ul_tags:
         if 'All versions' in ul_tag.text:
@@ -83,6 +87,8 @@ def latest_versions(session: Session) -> list[tuple[str, str, str]]:
 def download(session: CachedSession) -> None:
     download_url = MAIN_DOC_URL + 'download.html'
     soup = make_soup(session, download_url)
+    if soup is None:
+        return
     table_tag = soup.html.body.select_one('table.docutils')
     if table_tag is None:
         raise ParserFindTagException()

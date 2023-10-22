@@ -35,7 +35,6 @@ def download_file(url: str, path: Path) -> None:
                     bar.update(len(chunk))
     except urllib3.exceptions.RequestError:
         logging.error(RequestError.MESSAGE.format(url))
-        raise RequestError(url)
     finally:
         response.release_conn()
 
@@ -43,20 +42,19 @@ def download_file(url: str, path: Path) -> None:
 def get_response(session: Session, url: str) -> Response:
     try:
         response = session.get(url)
+        if response is None:
+            return
+        response.raise_for_status()
+        return response
     except RequestException:
         logging.error(RequestError.MESSAGE.format(url))
-        raise RequestError(url)
-    else:
-        status = response.status_code
-        if not status == HTTPStatus.OK:
-            logging.error(ResponseError.MESSAGE.format(url, status))
-            raise ResponseError(url, status)
-        return response
 
 
 def make_soup(session: Session, url: str, encoding: str = 'utf-8',
               features: str = 'lxml') -> BeautifulSoup:
     response = get_response(session, url)
+    if response is None:
+        return None
     response.encoding = encoding
     return BeautifulSoup(response.text, features=features)
 
