@@ -103,9 +103,7 @@ def pep(session: Session) -> list[tuple[str, str]]:
     instance = Peps(MAIN_PEP_URL)
     instance(session)
     result = [('Статус', 'Количество')]
-    result.extend(
-        [(key, str(value)) for key, value in instance.statistics.items()]
-    )
+    result.extend(instance.statistics.items())
     total = sum(instance.statistics.values())
     result.append(('Total', str(total)))
     return result
