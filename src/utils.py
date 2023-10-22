@@ -54,7 +54,7 @@ def make_soup(session: Session, url: str, encoding: str = 'utf-8',
               features: str = 'lxml') -> BeautifulSoup:
     response = get_response(session, url)
     if response is None:
-        return None
+        return
     response.encoding = encoding
     return BeautifulSoup(response.text, features=features)
 
